@@ -150,6 +150,13 @@ tracking run. Speculation Rules prefetch is used instead of
 `<link rel="prefetch">` because CMS pages are often sent with
 `Cache-Control: no-store`.
 
+## Releasing
+
+Bump `version` in `package.json`, add a CHANGELOG entry, commit, then tag and
+push: `git tag -a v1.2.3 -m "Pagepilot 1.2.3" && git push origin v1.2.3`.
+The tag triggers `.github/workflows/publish.yml`, which publishes to npm via
+Trusted Publishing (no token) with provenance.
+
 ## Demo
 
 ```sh
