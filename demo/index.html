@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagepilot demo – a page with several language versions</title>
+  <meta name="description" content="A small demo page for Pagepilot, the on-page toolbar for editors. It has hreflang links, a fake chat widget and a few widgets.">
+  <link rel="canonical" href="http://localhost:8000/demo/">
+  <link rel="alternate" hreflang="en-GB" href="http://localhost:8000/demo/">
+  <link rel="alternate" hreflang="de-DE" href="http://localhost:8000/de-de/demo/">
+  <link rel="alternate" hreflang="fr-FR" href="http://localhost:8000/fr-fr/demo/">
+  <link rel="alternate" hreflang="x-default" href="http://localhost:8000/demo/">
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; color: #222; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    header { padding: 24px 0; border-bottom: 1px solid #eee; }
+    .widget { padding: 24px; margin: 24px 0; border-radius: 12px; background: #f4f4f6; }
+    .widget-ready { background: #e8f0ff; }
+    #chat-widget { position: fixed; right: 20px; bottom: 20px; width: 280px; height: 360px; border-radius: 16px; background: #222; color: #fff; padding: 16px; }
+  </style>
+</head>
+<body>
+  <header><div class="container"><strong>Example Inc.</strong></div></header>
+  <main class="container">
+    <h1>Pagepilot demo</h1>
+    <p>Drag the circle, open the panel, try the tabs. <a href="#features">Jump to features</a> · <a href="#missing">broken anchor</a></p>
+    <div class="widget" data-widget="slider">Slider widget (enhanced by JS)</div>
+    <h2 id="features">Features</h2>
+    <div class="widget" data-widget="accordion">Accordion widget (enhanced by JS)</div>
+    <h4>A heading that skips a level</h4>
+    <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" width="1" height="1">
+  </main>
+  <div id="chat-widget">Chat widget</div>
+
+  <script type="module">
+    // Fake "JS enhancement" so the component inspector has something to show.
+    document.querySelectorAll('[data-widget]').forEach((el) => {
+      el.classList.add('widget-ready');
+      el.setAttribute('data-widget-ready', '');
+      el.textContent += ' ✓ enhanced';
+    });
+
+    import { init } from '../src/index.js';
+    init({
+      title: 'Demo',
+      activation: 'always',
+      ignoreSelectors: ['#chat-widget'],
+      hideables: [{ id: 'chat', label: 'Hide chat widget', selector: '#chat-widget', icon: 'chat' }],
+      marketFromUrl: (url) => url.pathname.split('/')[1] === 'demo' ? 'en' : url.pathname.split('/')[1],
+      markets: [
+        { key: 'en', label: 'English', name: 'English' },
+        { key: 'de-de', label: 'Deutsch', name: 'Germany · Deutsch' },
+        { key: 'fr-fr', label: 'Français', name: 'France · Français' },
+        { key: 'it-it', label: 'Italiano', name: 'Italy · Italiano' }
+      ],
+      environments: [[
+        { label: 'Local', host: 'localhost' },
+        { label: '127.0.0.1', host: '127.0.0.1' }
+      ]],
+      components: {
+        label: 'Widgets',
+        selector: '[data-widget-ready]',
+        rawSelector: '[data-widget]',
+        nameOf: (el) => el.dataset.widget,
+        classPrefix: /^widget-/
+      }
+    });
+  </script>
+</body>
+</html>
