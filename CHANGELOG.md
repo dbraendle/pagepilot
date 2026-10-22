@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-22
+
+### Changed
+- First npm release, staged via GitHub Actions Trusted Publishing
+- Package now ships the CHANGELOG
+
 ## [0.2.0] - 2026-10-22
 
 ### Added

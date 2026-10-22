@@ -1,6 +1,6 @@
 {
   "name": "pagepilot",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A draggable on-page toolbar for website editors: language versions, SEO preview, link and image checks, dev overlays.",
   "type": "module",
   "main": "./src/index.js",

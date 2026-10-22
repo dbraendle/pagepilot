@@ -29,7 +29,9 @@ separate module that is fetched once activation succeeds.
 No build step, no dependencies. Install straight from GitHub, pinned to a tag:
 
 ```sh
-npm install github:dbraendle/pagepilot#v0.2.0
+npm install pagepilot
+# or straight from GitHub, pinned to a tag:
+npm install github:dbraendle/pagepilot#v0.2.1
 ```
 
 or load it as a plain ES module:
@@ -154,8 +156,10 @@ tracking run. Speculation Rules prefetch is used instead of
 
 Bump `version` in `package.json`, add a CHANGELOG entry, commit, then tag and
 push: `git tag -a v1.2.3 -m "Pagepilot 1.2.3" && git push origin v1.2.3`.
-The tag triggers `.github/workflows/publish.yml`, which publishes to npm via
-Trusted Publishing (no token) with provenance.
+The tag triggers `.github/workflows/publish.yml`, which stages the release
+on npm via Trusted Publishing (no token) with provenance. It goes live once a
+maintainer approves it with 2FA: `npm stage list pagepilot`, then
+`npm stage approve <id>` (or approve it on npmjs.com).
 
 ## Demo
 
