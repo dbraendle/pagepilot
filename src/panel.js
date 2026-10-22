@@ -12,7 +12,8 @@ import seoTab from './tabs/seo.js';
 import checksTab from './tabs/checks.js';
 import devTab from './tabs/dev.js';
 
-const TABS = [pageTab, seoTab, checksTab, devTab];
+const ALL_TABS = [pageTab, seoTab, checksTab, devTab];
+let TABS = ALL_TABS;
 const EDGE_GAP = 12;
 const DRAG_THRESHOLD = 4;
 
@@ -59,35 +60,39 @@ function buildPanel(config) {
     root.setAttribute('role', 'region');
     root.setAttribute('aria-label', `${config.title} panel`);
 
-    const market = marketKeyFromUrl(new URL(window.location.href));
+    const market = config.languages ? marketKeyFromUrl(new URL(window.location.href)) : '';
+    const marketBadge = market ? `<span class="pp__market">${escapeHtml(market)}</span>` : '';
     const shortcut = shortcutLabel(config);
-    const bolt = config.prefetch && prefetchSupported;
+    const bolt = config.languages && config.prefetch && prefetchSupported;
 
-    root.innerHTML = `
-        <button type="button" class="pp__fab${anyHidden() ? ' has-badge' : ''}" aria-expanded="false" aria-label="Open ${escapeHtml(config.title)} panel" title="${escapeHtml(config.title)} (${shortcut}) · drag to move">
-            ${logo()}
-        </button>
+    const compactCard = !config.languages ? '' : `
         <div class="pp__card pp__card--compact" data-view="compact" hidden>
             <div class="pp__head" title="Drag to move">
                 ${logo()}
-                <span class="pp__market">${escapeHtml(market)}</span>
+                ${marketBadge}
                 ${bolt ? `<button type="button" class="pp__icon-btn pp__bolt${prefetchUntil() ? ' is-active' : ''}" data-action="prefetch" aria-pressed="${Boolean(prefetchUntil())}" aria-label="Instant language switch" title="${escapeHtml(boltTitle())}">${ICONS.bolt}</button>` : ''}
                 <button type="button" class="pp__icon-btn pp__icon-btn--tight" data-action="full" aria-label="Open full panel" title="Full panel">${ICONS.expand}</button>
                 <button type="button" class="pp__icon-btn pp__icon-btn--tight" data-action="collapse" aria-label="Collapse panel" title="Collapse (Esc / ${shortcut})">${ICONS.collapse}</button>
             </div>
             <div class="pp__compact-body">${renderLanguages({ compact: true }).html}</div>
-        </div>
+        </div>`;
+
+    root.innerHTML = `
+        <button type="button" class="pp__fab${anyHidden() ? ' has-badge' : ''}" aria-expanded="false" aria-label="Open ${escapeHtml(config.title)} panel" title="${escapeHtml(config.title)} (${shortcut}) · drag to move">
+            ${logo()}
+        </button>
+        ${compactCard}
         <div class="pp__card" data-view="full" hidden>
             <div class="pp__head" title="Drag to move">
                 ${logo()}
                 <span class="pp__title">${escapeHtml(config.title)}</span>
-                <span class="pp__market">${escapeHtml(market)}</span>
-                <button type="button" class="pp__icon-btn" data-action="compact" aria-label="Show languages only" title="Languages only">${ICONS.shrink}</button>
+                ${marketBadge}
+                ${config.languages ? `<button type="button" class="pp__icon-btn" data-action="compact" aria-label="Show languages only" title="Languages only">${ICONS.shrink}</button>` : ''}
                 <button type="button" class="pp__icon-btn pp__icon-btn--tight" data-action="collapse" aria-label="Collapse panel" title="Collapse (Esc / ${shortcut})">${ICONS.collapse}</button>
             </div>
-            <div class="pp__tabs" role="tablist">
+            ${TABS.length > 1 ? `<div class="pp__tabs" role="tablist">
                 ${TABS.map((tab) => `<button type="button" role="tab" class="pp__tab" data-tab="${tab.id}" aria-selected="false">${tab.label}</button>`).join('')}
-            </div>
+            </div>` : ''}
             <div class="pp__body">
                 ${TABS.map((tab) => `<div class="pp__panel" role="tabpanel" data-panel="${tab.id}" hidden></div>`).join('')}
             </div>
@@ -100,6 +105,8 @@ function create() {
     if (document.querySelector('.pp')) return;
 
     const config = getConfig();
+    TABS = config.tabs.map((id) => ALL_TABS.find((tab) => tab.id === id)).filter(Boolean);
+    if (!TABS.length) TABS = [pageTab];
     injectStyles(config);
     const state = loadState();
     const root = buildPanel(config);
@@ -109,7 +116,7 @@ function create() {
 
     document.body.appendChild(root);
     document.documentElement.classList.add(PANEL_ACTIVE_CLASS);
-    applyPrefetch();
+    if (config.languages && config.prefetch) applyPrefetch();
 
     const bolt = root.querySelector('[data-action="prefetch"]');
     document.addEventListener(PREFETCH_EVENT, () => {
@@ -182,7 +189,12 @@ function create() {
 
     // Older saved state only knew open: true/false.
     let view = state.view || (state.open ? 'full' : 'closed');
-    let lastOpenView = state.lastOpenView || 'compact';
+    let lastOpenView = state.lastOpenView || (config.languages ? 'compact' : 'full');
+    // Without language features there is no compact view.
+    if (!config.languages) {
+        if (view === 'compact') view = 'full';
+        if (lastOpenView === 'compact') lastOpenView = 'full';
+    }
 
     function setView(next, { save = true } = {}) {
         // Keep the panel anchored to the corner it sits closest to, so expanding

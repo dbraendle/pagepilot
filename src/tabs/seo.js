@@ -3,6 +3,7 @@
 // computed only when the tab is opened.
 
 import { ICONS, escapeHtml, normalizeUrl, truncate, flash, pill, isIgnored } from '../util.js';
+import { getConfig } from '../config.js';
 
 const meta = (selector) => (document.querySelector(selector)?.getAttribute('content') || '').trim();
 
@@ -33,10 +34,12 @@ function basicChecks() {
     const h1Count = document.querySelectorAll('h1').length;
     add('H1', h1Count === 1 ? 'ok' : (h1Count === 0 ? 'error' : 'warn'), `${h1Count}×`);
 
-    const alternates = Array.from(document.querySelectorAll('link[rel="alternate"][hreflang]'));
-    const selfListed = alternates.some((l) => normalizeUrl(l.getAttribute('href')) === normalizeUrl(window.location.href));
-    add('hreflang', alternates.length && selfListed ? 'ok' : 'warn',
-        `${alternates.length}${alternates.length && !selfListed ? ', no self' : ''}`);
+    if (getConfig().languages) {
+        const alternates = Array.from(document.querySelectorAll('link[rel="alternate"][hreflang]'));
+        const selfListed = alternates.some((l) => normalizeUrl(l.getAttribute('href')) === normalizeUrl(window.location.href));
+        add('hreflang', alternates.length && selfListed ? 'ok' : 'warn',
+            `${alternates.length}${alternates.length && !selfListed ? ', no self' : ''}`);
+    }
 
     return checks.map((c) =>
         `<li class="pp__check"><span class="pp__check-label">${c.label}</span>${pill(c.status, c.detail)}</li>`

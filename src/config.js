@@ -27,6 +27,13 @@ const DEFAULTS = {
     // Elements the checks and outlines ignore (e.g. a chat widget).
     ignoreSelectors: [],
 
+    // Which tabs, in which order: any of 'page', 'seo', 'checks', 'dev'.
+    tabs: ['page', 'seo', 'checks', 'dev'],
+
+    // Language features: tiles, compact language bar, instant language switch.
+    // Turn off for single-language sites (the circle then opens the full panel).
+    languages: true,
+
     // Language versions. Without markets, the tiles are built from the page's
     // <link rel="alternate" hreflang> tags alone.
     // markets: [{ key: 'de-de', label: 'Deutsch', name: 'Germany · Deutsch' }]
@@ -57,7 +64,7 @@ const DEFAULTS = {
     grid: { container: '.container', columns: 12 },
     // Alt + this key (KeyboardEvent.code) toggles the panel.
     shortcut: 'KeyB',
-    // Opt-in instant language switch (Speculation Rules prefetch).
+    // Opt-in instant language switch (Speculation Rules prefetch); needs languages.
     prefetch: true,
     linkCheck: { maxUrls: 100, concurrency: 2, pauseMs: 250 }
 };

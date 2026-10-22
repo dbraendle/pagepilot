@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-22
+
+### Added
+- `tabs` option: choose which tabs appear and in which order
+- `languages` option: turn off all language features for single-language
+  sites (the circle then opens the full panel; the SEO check skips hreflang)
+- Single-language demo page
+
 ## [0.1.0] - 2026-10-22
 
 ### Added

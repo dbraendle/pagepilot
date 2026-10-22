@@ -29,7 +29,7 @@ separate module that is fetched once activation succeeds.
 No build step, no dependencies. Install straight from GitHub, pinned to a tag:
 
 ```sh
-npm install github:dbraendle/pagepilot#v0.1.0
+npm install github:dbraendle/pagepilot#v0.2.0
 ```
 
 or load it as a plain ES module:
@@ -44,6 +44,34 @@ or load it as a plain ES module:
 With a bundler (webpack, Vite, …) the panel becomes its own lazy chunk.
 
 ## Configuration
+
+Everything site-specific lives in the config you pass to `init()` – the
+package itself knows nothing about your CMS, domains or brand. Every option
+is optional.
+
+### Pick what you need
+
+```js
+init({
+  tabs: ['page', 'seo', 'checks', 'dev'], // which tabs, in which order
+  languages: true,      // language tiles, compact language bar, instant switch
+  prefetch: true,       // instant language switch (needs languages)
+  environments: [],     // empty: no environment switch
+  hideables: [],        // empty: no "hide for me" toggles
+  noCacheParam: null,   // null: no "Uncached" button
+  components: null      // null: no component inspector in the Dev tab
+});
+```
+
+For a single-language site use `languages: false`: the circle then opens the
+full panel directly and the SEO check skips hreflang. Hideables, environments
+and actions live in the Page tab, so keep `'page'` in `tabs` if you use them.
+
+Works with any CMS or none: activate the panel with a selector your CMS
+renders only for logged-in editors, a function (e.g. checking an admin
+cookie), or `'always'` on staging.
+
+### All options
 
 ```js
 import { init } from 'pagepilot';
@@ -95,6 +123,8 @@ init({
     errorClass: 'widget-error'
   },
 
+  tabs: ['page', 'seo', 'checks', 'dev'],
+  languages: true,
   grid: { container: '.container', columns: 12 },
   shortcut: 'KeyB',                  // Alt + this key
   prefetch: true,
@@ -124,7 +154,8 @@ tracking run. Speculation Rules prefetch is used instead of
 
 ```sh
 python3 -m http.server 8000
-# open http://localhost:8000/demo/
+# open http://localhost:8000/demo/          (multilingual, all tabs)
+# open http://localhost:8000/demo/single.html (single language, SEO + Checks)
 ```
 
 ## License

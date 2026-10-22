@@ -136,7 +136,7 @@ function hideableRows() {
 }
 
 function prefetchRow() {
-    if (!getConfig().prefetch) return '';
+    if (!getConfig().languages || !getConfig().prefetch) return '';
     return `
         <label class="pp__row${prefetchSupported ? '' : ' is-disabled'}">
             <span class="pp__row-icon">${ICONS.bolt}</span>
@@ -160,7 +160,7 @@ export default {
 
     render(container, ctx) {
         const config = getConfig();
-        const languages = renderLanguages();
+        const languages = config.languages ? renderLanguages() : null;
 
         const viaLink = ctx.viaLink && editorFlagUntil();
         const editorNote = viaLink ? `
@@ -175,10 +175,10 @@ export default {
         const env = environmentSwitch();
 
         container.innerHTML = `${editorNote}
-            <section class="pp__section">
+            ${languages ? `<section class="pp__section">
                 <h2 class="pp__heading">Language versions <span class="pp__count">${languages.count}/${languages.total}</span></h2>
                 ${languages.html}
-            </section>
+            </section>` : ''}
             ${settings ? `<section class="pp__section">${settings}</section>` : ''}
             <section class="pp__section">
                 <h2 class="pp__heading">Actions</h2>
